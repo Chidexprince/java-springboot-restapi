@@ -1,39 +1,46 @@
 package com.cprince.springrestdemo.service;
 
-import com.cprince.springrestdemo.dao.EmployeeDao;
+import com.cprince.springrestdemo.dao.EmployeeRepository;
 import com.cprince.springrestdemo.entity.Employee;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
-    private EmployeeDao employeeDao;
+    private EmployeeRepository employeeRepository;
 
 
-    public EmployeeServiceImpl(EmployeeDao theEmployeeDao) {
-        employeeDao = theEmployeeDao;
+    public EmployeeServiceImpl(EmployeeRepository theEmployeeRepository) {
+        employeeRepository = theEmployeeRepository;
     }
 
     @Override
     public List<Employee> findAll() {
-        return employeeDao.findAll();
+        return employeeRepository.findAll();
     }
 
     @Override
     public Employee findById(int employeeId) {
-        return employeeDao.findById(employeeId);
+        Optional<Employee> result = employeeRepository.findById(employeeId);
+        Employee employee = null;
+
+        if(result.isPresent()) {
+            employee = result.get();
+        } else {
+            throw new RuntimeException("Employee with Id - " + employeeId + " not found");
+        }
+        return employee;
     }
 
-    @Transactional
     @Override
     public Employee save(Employee employee) {
-        return employeeDao.save(employee);
+        return employeeRepository.save(employee);
     }
-    @Transactional
+
     @Override
-    public void delete(int employeeId) {
-        employeeDao.delete(employeeId);
+    public void deleteById(int employeeId) {
+        employeeRepository.deleteById(employeeId);
     }
 }
